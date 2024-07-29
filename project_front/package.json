@@ -11,6 +11,7 @@
     "@mdi/font": "7.4.47",
     "axios": "^1.7.2",
     "core-js": "^3.37.1",
+    "leaflet.markercluster": "^1.5.3",
     "roboto-fontface": "*",
     "validator": "^13.12.0",
     "vee-validate": "^4.13.2",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
+    "@vue-leaflet/vue-leaflet": "^0.10.1",
     "@vue/eslint-config-standard": "^8.0.1",
     "eslint": "^8.57.0",
     "eslint-config-standard": "^17.1.0",
@@ -29,6 +31,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.4.0",
     "eslint-plugin-vue": "^9.27.0",
+    "leaflet": "^1.9.4",
     "pinia": "^2.1.7",
     "sass": "1.77.6",
     "unplugin-auto-import": "^0.17.6",

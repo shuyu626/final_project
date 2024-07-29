@@ -113,6 +113,7 @@
   <v-main>
     <router-view></router-view>
   </v-main>
+  
 </template>
 
 <script setup>
@@ -132,8 +133,8 @@ const isRegistering = ref(true) // 判斷註冊還是登入
 
   const navItems=[
     { to: '/', text: '資源地圖', icon: 'mdi-map-search' },
-    { to: '/', text: '活動分享', icon: 'mdi-calendar' },
-    { to: '/', text: '物資分享', icon: 'mdi-gift' },
+    { to: '/event', text: '活動分享', icon: 'mdi-calendar' },
+    { to: '/resource', text: '物資分享', icon: 'mdi-gift' },
     { to: '/', text: '管理', icon: 'mdi-cog' },
     {to:'/',text:'註冊/登入',icon:'mdi-account-plus'},
     ]
@@ -147,11 +148,12 @@ const isRegistering = ref(true) // 判斷註冊還是登入
 
 const closeDialog = () => {
   dialogOpen.value = false
-  
+  resetForm()
 }
 
 const toggleForm = (isRegister) => {
   isRegistering.value = isRegister
+  resetForm()
 }
 
 
@@ -189,8 +191,15 @@ const schema = yup.object({
 
 
 
-const {handleSubmit, isSubmitting}=useForm({
-  validationSchema: schema
+const { handleSubmit, isSubmitting,resetForm } = useForm({
+  validationSchema: schema,
+  // 定義表單的初始值
+  initialValues:{
+    username:'',
+    email:'',
+    password:'',
+    passwordConfirm:''
+  }
 })
 
 const username = useField('username')
@@ -223,8 +232,18 @@ const submit = handleSubmit(async(values)=>{
 
 </script>
 <style scoped>
-.b-1{
-  border: 1px solid black;
-}
 
+.b-1{
+  border: 1px solid #7a7a7a;
+}
+.v-text-field{
+  margin: 8px 0 8px 0;
+}
+.v-footer{
+  height: 50px;
+  
+}
+.v-main {
+  flex: 1; /* 使主要內容區域占據剩餘空間 */
+}
 </style>

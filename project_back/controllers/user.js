@@ -25,7 +25,7 @@ export const create = async (req, res) => {
     } else if (error.name === 'MongoServerError' && error.code === 11000) {
       res.status(StatusCodes.CONFLICT).json({
         success: false,
-        message: '帳號已註冊'
+        message: '服務名稱已註冊'
       })
     } else {
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -52,8 +52,7 @@ export const login = async (req, res) => {
       result: {
         token, // 返回生成的 token
         username: req.user.username, // 返回服務名稱
-        role: req.user.role, // 返回使用者的角色
-        cart: req.user.cartQuantity // 返回使用者的購物車數量（假設有這個屬性）
+        role: req.user.role // 返回使用者的角色
       }
     })
     // 如果發生任何錯誤，返回內部伺服器錯誤的 HTTP 狀態碼和錯誤訊息
@@ -96,9 +95,8 @@ export const profile = (req, res) => {
       success: true,
       message: '',
       result: {
-        account: req.user.account,
-        role: req.user.role,
-        cart: req.user.cartQuantity
+        username: req.user.username,
+        role: req.user.role
       }
     })
   } catch (error) {

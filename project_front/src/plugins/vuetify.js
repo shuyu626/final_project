@@ -19,7 +19,9 @@ export default createVuetify({
         colors:{
           primary:'#A7D9D6',
           secondary:'#D8C6AB',
-          accent:'#FBC255'
+          third:'#F0E2CC',
+          accent:'#FBC255',
+          info:'#D9D9D9'
         }
       }
     }

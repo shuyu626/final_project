@@ -1,17 +1,76 @@
 <template>
-  <div id="map"></div>
-</template>
+    <leaflet-map/>
+    <v-card width="500px" variant="outlined" class="overflow-y-auto">
+        <v-toolbar color="secondary" prominent >
+            <v-toolbar-title>
+                服務查詢
+            </v-toolbar-title>
+        </v-toolbar>
+        <v-card-item>
+            <v-responsive max-width="450px" class="my-5">
+                <v-text-field
+                variant="outlined"
+                label="搜尋"
+                prepend-inner-icon="mdi-magnify"
+                hide-details
+                single-line
+                density="comfortable"
+                clearable
+                >
+                </v-text-field>
+            </v-responsive>
+            <v-select  
+            width="215px"
+            label="縣市"
+            class="d-inline-block mr-4"
+            density="comfortable"
+            >
+            </v-select>
+            <v-select  
+            width="215px"
+            label="鄉鎮市區"
+            class="d-inline-block"
+            density="comfortable"
+            ></v-select>
 
+
+            <v-expansion-panels variant="accordion" >
+                <v-expansion-panel
+                    title="選擇服務"
+                >
+                <v-expansion-panel-text>
+                
+                    <v-select
+                    v-for="item in items"
+                    :label="item.title"
+                    :items="item.category"
+                    >
+                    </v-select>
+                </v-expansion-panel-text>
+                </v-expansion-panel>
+            </v-expansion-panels>
+
+        </v-card-item>
+    </v-card>
+    
+</template>
 <script setup>
-  //
+import { ref, onMounted } from 'vue';
+const items=[
+    {title:'身障',category:['日照中心','全日型住宿機構','輔具中心']},
+    {title:'長照',category:['照管中心','共餐服務','輔具中心']},
+    {title:'兒少'},
+    {title:'婦女'},
+    {title:'社會救助'},
+    {title:'精神'}
+]
+
 </script>
-<style>
-#map{
-  width: 850px;
-  height: 650px;
-  border: 1px solid #000;
-  position: absolute;
-  top: 18%;
-  left: 6%;
+<style scoped>
+.v-card{
+    height: 650px;
+    position: absolute;
+    top: 18%;
+    right: 10%;
 }
-</style>
+  </style>
