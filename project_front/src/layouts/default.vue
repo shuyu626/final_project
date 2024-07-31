@@ -104,7 +104,7 @@
         :prepend-icon="item.icon" 
         :to="item.to"
         :active="false"
-        class="mx-1"
+        class="mx-1 font-weight-black"
         @click="handleItemClick(item)"
         >{{ item.text }}</v-btn>
       </template>
@@ -113,7 +113,7 @@
   <v-main>
     <router-view></router-view>
   </v-main>
-  
+
 </template>
 
 <script setup>
@@ -131,12 +131,20 @@ const dialogOpen = ref(false)
 const isRegistering = ref(true) // 判斷註冊還是登入
 
 
+// const navItems=[
+//     { type:'select',to: '/', text: '資源地圖', icon: 'mdi-map-search' },
+//     { type:'button',to: '/event', text: '活動分享', icon: 'mdi-calendar' },
+//     { type:'select',to: '/resource', text: '物資分享', icon: 'mdi-gift' },
+//     { type:'button',to: '/setting', text: '管理', icon: 'mdi-cog' },
+//     { type:'button',o:'/',text:'註冊/登入',icon:'mdi-account-plus'},
+//     ]
+
   const navItems=[
     { to: '/', text: '資源地圖', icon: 'mdi-map-search' },
     { to: '/event', text: '活動分享', icon: 'mdi-calendar' },
     { to: '/resource', text: '物資分享', icon: 'mdi-gift' },
-    { to: '/', text: '管理', icon: 'mdi-cog' },
-    {to:'/',text:'註冊/登入',icon:'mdi-account-plus'},
+    { to: '/id', text: '管理', icon: 'mdi-cog' },
+    { to:'',text:'註冊/登入',icon:'mdi-account-plus'},
     ]
 
 

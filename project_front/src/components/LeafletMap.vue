@@ -53,7 +53,7 @@ onMounted(() => {
         L.marker([item.lat, item.lng], { icon: greenIcon })
           .addTo(initialMap.value)
           .bindPopup(`<h2>${item.name}</h2>`)
-          .openPopup();
+          // .openPopup();
       });
     } catch (error) {
       console.error('Error fetching JSON data:', error);

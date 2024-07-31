@@ -7,23 +7,14 @@
             </v-toolbar-title>
         </v-toolbar>
         <v-card-item>
-            <v-responsive max-width="450px" class="my-5">
-                <v-text-field
-                variant="outlined"
-                label="搜尋"
-                prepend-inner-icon="mdi-magnify"
-                hide-details
-                single-line
-                density="comfortable"
-                clearable
-                >
-                </v-text-field>
-            </v-responsive>
+            <search/>
             <v-select  
             width="215px"
             label="縣市"
             class="d-inline-block mr-4"
             density="comfortable"
+            :items="city"
+            variant="outlined"
             >
             </v-select>
             <v-select  
@@ -31,6 +22,8 @@
             label="鄉鎮市區"
             class="d-inline-block"
             density="comfortable"
+            :items="area"
+            variant="outlined"
             ></v-select>
 
 
@@ -52,7 +45,8 @@
 
         </v-card-item>
     </v-card>
-    
+      <!-- app 固定在頁腳 -->
+  <v-footer color="info" height="60px" app></v-footer>
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
@@ -64,6 +58,8 @@ const items=[
     {title:'社會救助'},
     {title:'精神'}
 ]
+
+const city = ['臺北市','新北市']
 
 </script>
 <style scoped>
