@@ -10,6 +10,7 @@
             width="150"
             v-bind="activatorProps"
             id="create"
+            :ripple="false"
             >
                 發布需求
             </v-btn>
@@ -75,7 +76,7 @@
 
                         <v-card-actions>
                             <div class="mx-auto">
-                                <submitButton></submitButton>
+                                <AppButton></AppButton>
                                 <!-- 關閉對話框的按鈕 -->
                                 <!-- @click="isActive.value = false"：點擊按鈕時，將 isActive.value 設置為 false，從而關閉對話框 -->
                                 <v-btn

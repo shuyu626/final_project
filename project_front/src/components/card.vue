@@ -9,8 +9,9 @@
                 color="medium-emphasis"
                 icon="mdi-bookmark"
                 size="large"
-                variant="text"
-              ></v-btn>
+                variant="plain"
+                :ripple="false"
+            ></v-btn>
         </v-card-item>
     </v-card>
 

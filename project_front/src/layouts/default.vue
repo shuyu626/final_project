@@ -1,4 +1,5 @@
 <template>
+  <!-- 側邊欄 -->
   <v-navigation-drawer v-if="mobile" v-model="drawer" color="primary" class="b-1">
     <v-list nav>
       <v-list-item
@@ -90,6 +91,7 @@
     </v-form>
   </v-dialog>
 
+  <!-- 導覽列 -->
   <v-app-bar color="primary" scroll-behavior="elevate" class="b-1">
     <v-container class="d-flex align-center">
       <v-btn to="/" :active="false">logo</v-btn>
@@ -131,19 +133,12 @@ const dialogOpen = ref(false)
 const isRegistering = ref(true) // 判斷註冊還是登入
 
 
-// const navItems=[
-//     { type:'select',to: '/', text: '資源地圖', icon: 'mdi-map-search' },
-//     { type:'button',to: '/event', text: '活動分享', icon: 'mdi-calendar' },
-//     { type:'select',to: '/resource', text: '物資分享', icon: 'mdi-gift' },
-//     { type:'button',to: '/setting', text: '管理', icon: 'mdi-cog' },
-//     { type:'button',o:'/',text:'註冊/登入',icon:'mdi-account-plus'},
-//     ]
 
   const navItems=[
-    { to: '/', text: '資源地圖', icon: 'mdi-map-search' },
-    { to: '/event', text: '活動分享', icon: 'mdi-calendar' },
-    { to: '/resource', text: '物資分享', icon: 'mdi-gift' },
-    { to: '/id', text: '管理', icon: 'mdi-cog' },
+    { to: '/event', text: '資源地圖', icon: 'mdi-map-search' },
+    { to: '/findEvent', text: '活動分享', icon: 'mdi-calendar' },
+    { to: '/findResource', text: '物資分享', icon: 'mdi-gift' },
+    { to: '/setting', text: '管理', icon: 'mdi-cog' },
     { to:'',text:'註冊/登入',icon:'mdi-account-plus'},
     ]
 
