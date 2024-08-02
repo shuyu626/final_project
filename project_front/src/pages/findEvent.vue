@@ -1,5 +1,5 @@
 <template>
-        <!-- 新增商品對話框 -->
+        <!-- 新增活動對話框 -->
         <v-dialog max-width="700">
             <!-- activatorProps 是由 v-dialog 提供的綁定道具，確保觸發器按鈕與對話框的打開狀態相關聯 -->
             <template #activator="{ props: activatorProps }">

@@ -100,6 +100,29 @@
         <v-app-bar-nav-icon @click="drawer=true"></v-app-bar-nav-icon>
       </template>
       <template v-else>
+        <template v-for="menu in menus" :key="menu.title">
+        <v-menu open-on-hover transition="slide-y-transition">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" :ripple="false" variant="plain" :prepend-icon="menu.icon" >
+              {{ menu.title }}
+              <v-icon right>mdi-menu-down</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              v-for="(item, i) in menu.items"
+              :key="i"
+              :to="item.to"
+              link
+            >
+              <v-list-item-title>{{ item.text }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
+
+
+
         <v-btn 
         v-for="item in navItems" 
         :key="item.to" 
@@ -119,7 +142,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref,computed } from 'vue'
 import { useDisplay } from 'vuetify'
 const { mobile } = useDisplay()
 import { useForm, useField } from 'vee-validate'
@@ -132,16 +155,35 @@ const drawer = ref(false)
 const dialogOpen = ref(false)
 const isRegistering = ref(true) // 判斷註冊還是登入
 
+const menus = computed(() => {
+  return [
+    {
+      title: "資源地圖", icon: 'mdi-map-search',
+      items: [
+        { to: "/", text: "資源查詢" },
+        { to: "/", text: "新增地標"},
+      ],
+    },
+    {
+      title: "物資分享", icon: 'mdi-package-variant' ,
+      items: [
+        { to: "/", text: "我要募資" },
+        { to: "/", text: "我要分享" },
+      ],
+    },
+  ];
+});
 
 
-  const navItems=[
+  const menuItems=[
     { to: '/event', text: '資源地圖', icon: 'mdi-map-search' },
+    { to: '/findResource', text: '物資分享', icon: 'mdi-package-variant' }
+  ]
+  const navItems=[
     { to: '/findEvent', text: '活動分享', icon: 'mdi-calendar' },
-    { to: '/findResource', text: '物資分享', icon: 'mdi-gift' },
-    { to: '/setting', text: '管理', icon: 'mdi-cog' },
+    { to: '/admin/account', text: '管理', icon: 'mdi-cog' },
     { to:'',text:'註冊/登入',icon:'mdi-account-plus'},
     ]
-
 
   const handleItemClick = (item) => {
   if (item.text === '註冊/登入') {
