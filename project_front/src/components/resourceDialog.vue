@@ -12,14 +12,14 @@
             id="create"
             :ripple="false"
             >
-                發布需求
+            {{cardTitle}}
             </v-btn>
         </template>
             <!-- 定義了對話框打開時顯示的內容。插槽道具 { isActive } 用於控制對話框的打開和關閉狀態 -->
             <template #default="{ isActive }">
                 <v-card>
                     <v-container>
-                        <v-card-title class="font-weight-black text-center text-h4">發布需求</v-card-title>   
+                        <v-card-title class="font-weight-black text-center text-h4">{{cardTitle}}</v-card-title>   
                         <v-card-text>
                             <v-form>
                                 <v-row>
@@ -35,22 +35,22 @@
                                     </v-col>
                                 </v-row>
                                 <v-row>
-                                    <!-- 活動名稱 -->
-                                    <v-col cols="12" md="3" class="my-auto text-center">
+                                    <!-- 物資名稱 -->
+                                    <v-col cols="12" md="3" class="my-auto text-left ps-6">
                                     <label class="form-label">物資名稱</label>
                                     </v-col>
                                     <v-col cols="12" md="9">
                                         <inputText/>
                                     </v-col>
                                     <!-- 需求量 -->
-                                    <v-col cols="12" md="3" class="my-auto text-center">
-                                    <label class="form-label">需求量</label>
+                                    <v-col cols="12" md="3" class="my-auto text-left ps-6">
+                                    <label class="form-label">{{numberTitle}}</label>
                                     </v-col>
                                     <v-col cols="12" md="9">
                                         <inputText/>
                                     </v-col>
-                                     <!-- 活動對象 -->
-                                     <v-col cols="12" md="3" class="my-auto text-center">
+                                     <!-- 物資類別 -->
+                                     <v-col cols="12" md="3" class="my-auto text-left ps-6">
                                     <label class="form-label">物資類別</label>
                                     </v-col>
                                     <v-col cols="12" md="9">
@@ -59,13 +59,13 @@
                                             variant="outlined" 
                                             density="comfortable" 
                                             dense
-                                            :items="['選項1', '選項2', '選項3']"
+                                            :items="categories"
                                             hide-details
                                         ></v-select>
                                     </v-col>
                                     <!-- 需求介紹 -->
-                                    <v-col cols="12" md="3" class="my-auto text-center">
-                                        <label class="form-label" >需求介紹</label>
+                                    <v-col cols="12" md="3" class="my-auto text-left ps-6">
+                                        <label class="form-label" >{{descriptionTitle}}</label>
                                     </v-col>
                                     <v-col cols="12" md="9">
                                         <inputText/>
@@ -93,7 +93,23 @@
             </template>
         </v-dialog>
 </template>
-
+<script setup>
+const props = defineProps({
+    cardTitle: {
+        type: String,
+        default: '發布需求'
+    },
+    numberTitle:{
+        type:String,
+        default:'需求量'
+    },
+    descriptionTitle:{
+        type:String,
+        default:'需求介紹'
+    }
+});
+const categories = ['食品', '服飾配件', '日用品', '家具', '輔具', '教育用品', '嬰幼兒用品', '休閒用品', '其他']
+</script>
 <style scoped>
 .b-1{
   border: 1px solid #7a7a7a;
@@ -103,4 +119,6 @@
     font-weight: bold;
     color: rgb(80, 80, 80);
 }
+
+
 </style>

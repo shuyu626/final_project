@@ -30,6 +30,7 @@
                     <v-toolbar-title class="ms-0">基本資料</v-toolbar-title>
                 </v-toolbar>
                 <vue-file-agent
+                    class="mb-5"
                     accept="image/jpeg,image/png"
                     deletable
                     max-size="1MB"
@@ -38,18 +39,18 @@
                 ></vue-file-agent>
                   <v-container>
                     <v-row class="mb-5 px-15  text-left">
-                      <!-- 活動名稱 -->
                        <template v-for="(item,index) in members" :key="index" >
                         <v-col md="2"></v-col>
                         <v-col cols="12" md="3" class="my-auto">
-                          <label class="form-label text-h6 ">{{item.name}}</label>
+                          <label class="form-label" style="font-size:18px;">{{item.name}}</label>
                         </v-col>
                         <v-col cols="12" md="4" class="my-auto">
-                            <p class="text-h6">{{item.member}}</p>
+                            <p style="font-size:18px;">{{item.member}}</p>
                         </v-col>
                         <v-col md="3" class="ps-10">
                           <v-btn icon="mdi-pencil" variant="flat"></v-btn>
                         </v-col>
+                        <v-divider inset></v-divider>
                       </template>
                   </v-row>
                   </v-container>
@@ -130,7 +131,7 @@
            <breadcrumbs :title="event"></breadcrumbs>
            <div class="w-66 mx-auto b-1 rounded-lg" v-for="(item,index) in eventmark" :key="index">
             <v-card variant="flat" class="rounded-lg">
-                <v-row class="align-center my-4 ps-10">
+                <v-row class="align-center my-4 ps-10" >
                     <v-col cols="4" class=" align-center">
                         <v-img :src="item.img" class="b-1 rounded-lg" width="250px" height="170px" cover></v-img>
                     </v-col>
@@ -138,7 +139,7 @@
                       <v-card-title>{{ item.name }}</v-card-title>
                       <v-card-subtitle>{{ item.organitation }}</v-card-subtitle>
                   </v-col>
-                  <v-col cols="2" class=" align-self-start mt-2">
+                  <v-col cols="3" class=" align-self-start mt-2">
                     <v-btn  text="取消收藏" prepend-icon="mdi-bookmark" variant="flat" style="background-color: #F5B4B4;"></v-btn>
                   </v-col>
                 </v-row>                
@@ -151,7 +152,13 @@
     </div>
   </v-card>
 </template>
-  <script setup>
+<script setup>
+import { definePage } from 'vue-router/auto'
+definePage({
+  meta: {
+    title: ' | 會員管理'
+  }
+})
 const profile=(['會員中心','基本資料'])
 const mark=(['會員中心','地標管理'])
 const post=(['會員中心','貼文管理'])

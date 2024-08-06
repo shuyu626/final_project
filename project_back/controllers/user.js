@@ -40,8 +40,11 @@ export const login = async (req, res) => {
   try {
     // 使用 JWT 簽署 token，包含使用者的 _id
     const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '7 days' })
+
     // 將生成的 token 加入使用者的 tokens 屬性中
     req.user.tokens.push(token)
+    console.log(req.user.role) // 可以console來看資料是否進來
+    console.log(token)
     // 將使用者物件保存到資料庫中，包括更新後的 tokens 屬性
     await req.user.save()
     // 返回成功的 HTTP 狀態碼和包含使用者資訊的 JSON 回應
@@ -51,7 +54,7 @@ export const login = async (req, res) => {
       // req.user包含已驗證的使用者資訊
       result: {
         token, // 返回生成的 token
-        username: req.user.username, // 返回服務名稱
+        email: req.user.email, // 返回服務名稱
         role: req.user.role // 返回使用者的角色
       }
     })

@@ -131,50 +131,37 @@
             <breadcrumbs :title="title"></breadcrumbs>
             <search class="mx-auto" max-width="700px"></search>
             <div class="text-center">
-                <!-- <span class="me-3">
-                    熱門搜尋
-                </span> -->
                     <v-sheet
                     class="mx-auto d-inline-block"
                     max-width="900"
                     >
-                    <v-slide-group
-                        show-arrows
-                        multiple
-                    >
-                        <v-slide-group-item
-                        v-for="n in chips"
-                        :key="n"
-                        v-slot="{ isSelected, toggle }"
+                        <v-slide-group
+                            show-arrows
+                            multiple
+                            
                         >
-                        <v-chip
-                        :style="{
-                            backgroundColor: isSelected ? '#616161' : '#EEEEEE',
-                            color: isSelected ? 'white' : 'black'
-                        }"
-                            class="ma-2"
-                            @click="toggle"
-                        >
-                            {{ n }}
-                        </v-chip>
-                        </v-slide-group-item>
-                    </v-slide-group>
+                            <v-slide-group-item
+                            v-for="chip in chips"
+                            :key="chip"
+                            v-slot="{ isSelected, toggle }"
+                            v-model:selected="selectedChips"
+                            >
+                            <v-chip
+                            :style="{
+                                backgroundColor: isSelected ? '#616161' : '#EEEEEE',
+                                color: isSelected ? 'white' : 'black'
+                            }"
+                                class="ma-2"
+                                @click="toggle"
+                            >
+                                {{ chip }}
+                            </v-chip>
+                            </v-slide-group-item>
+                        </v-slide-group>
                     </v-sheet>
-
-                <!-- <v-btn
-                    class="b-1 mx-3 rounded-xl bg-third"
-                    variant="text"
-                    density="comfortable"
-                    width="65px"
-                    @click="drawer = !drawer"
-                    >
-                    <span>類別</span>
-                    <v-icon>mdi-filter</v-icon>
-                </v-btn> -->
-                <!-- card -->
-                <v-row justify="center" v-for="r in 3" :key="r" class="my-3">
-                    <v-col cols="12" md="4" lg="2" v-for="c in 4" :key="c">
-                        <card class="cursor-pointer"></card>
+                <v-row justify="center" v-for="(row, rIndex) in filteredCards" :key="rIndex"  class="my-3">
+                    <v-col cols="12" md="4" lg="2" v-for="(card, cIndex) in row" :key="cIndex">
+                        <card class="cursor-pointer" :title="card.title" :subtitle="card.subtitle" :image="card.image" :chips="card.chips"></card>
                     </v-col>
                 </v-row>
             </div>
@@ -191,10 +178,56 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-const drawer =ref(false)
-const chips=['兒少','長照','精神','照顧者','就業','育兒','身障','育兒','照顧者','就業','婦女','身障','就業','婦女','其他']
+import { ref, computed } from 'vue'
+import { definePage } from 'vue-router/auto'
 const title=ref(['活動分享','活動查詢'])
+const chips=['兒少','長照','精神','照顧者','就業','育兒','身障','育兒','照顧者','就業','婦女','身障','就業','婦女','其他']
+const selectedChips = ref([]);
+const page=ref(1)
+
+definePage({
+  meta: {
+    title: ' | 活動查詢'
+  }
+})
+
+
+
+// const cards = ref([
+//   {
+//     title: '七月徵才活動',
+//     subtitle: '新北市社會局',
+//     image: 'https://image.presslogic.com/girls.presslogic.com/wp-content/uploads/2020/08/0074KBdTgy1gh3katpy2sj30n00n0n05.jpg?auto=format&w=1053',
+//     chips: ['就業']
+//   },
+//   // 添加更多卡片数据...
+//   {
+//     title: '兒少活動',
+//     subtitle: '台北市兒童局',
+//     image: 'https://example.com/image2.jpg',
+//     chips: ['兒少', '育兒']
+//   }
+// ]);
+
+// const filteredCards = computed(() => {
+//   if (selectedChips.value.length === 0) {
+//     return chunkArray(cards.value, 4); // 没有选择芯片时，显示所有卡片，每行4个卡片
+//   }
+//   const filtered = cards.value.filter(card => 
+//     card.chips.some(chip => selectedChips.value.includes(chip))
+//   );
+//   return chunkArray(filtered, 4);
+// });
+
+// function chunkArray(array, chunkSize) {
+//   const chunks = [];
+//   for (let i = 0; i < array.length; i += chunkSize) {
+//     chunks.push(array.slice(i, i + chunkSize));
+//   }
+//   return chunks;
+// }
+
+
 </script>
 <style scoped>
 .b-1{

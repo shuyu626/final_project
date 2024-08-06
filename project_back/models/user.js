@@ -25,7 +25,6 @@ const schema = new Schema({
   password: {
     type: String,
     minlength: [6, '使用者密碼長度不符'],
-    maxlength: [20, '使用者密碼長度不符'],
     required: [true, '使用者密碼必填']
   },
   tokens: {

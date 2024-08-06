@@ -18,7 +18,7 @@
                             <v-col cols="4">
                                 <v-card-title>{{ item.name }}</v-card-title>
                                 <v-card-subtitle>{{ item.organitation }}</v-card-subtitle>
-                                <v-card-text >需求量：{{ item.number }}</v-card-text>
+                                <v-card-text >數量：{{ item.number }}</v-card-text>
                                 <AppButton text="詳細說明" class="bg-third" to="/resource"></AppButton>
                             </v-col>
                         </v-row>                
@@ -68,8 +68,12 @@
 </template>
 <script setup>
 import { ref, computed, watch } from 'vue';
-  
-
+import { definePage } from 'vue-router/auto'
+definePage({
+  meta: {
+    title: ' | 我要募資'
+  }
+})
 
 const title=ref(['物資分享','我要募資'])
 
@@ -97,12 +101,14 @@ const categories = ref([
     // 添加其他物品
   ]);
   
-  const allSelected = ref(true);
-  const filteredItems = ref([]);
+  const allSelected = ref(true); // 用於追蹤是否所有類別都被選中
+  const filteredItems = ref([]); // 用於存儲篩選後的項目
   
   const filterItems = () => {
+    // 如果 allSelected 為 true，將所有項目賦值給 filteredItems
     if (allSelected.value) {
       filteredItems.value = items.value;
+     // 否則，根據選中的類別篩選項目
     } else {
       filteredItems.value = items.value.filter((item) =>
         categories.value.some(
@@ -112,16 +118,21 @@ const categories = ref([
     }
   };
   
+  // 監聽 categories 中類別選中狀態的變化
   watch(
     () => categories.value.map((category) => category.selected),
     () => {
+      // 當 selected 狀態變化時，調用 filterItems 函數篩選項目
       filterItems();
+      // 更新 allSelected 的值，判斷是否所有類別都被選中
       allSelected.value = categories.value.every((category) => category.selected);
     },
-    { deep: true }
+    { deep: true } // 深度監聽，監聽 categories 中每個 category 的 selected 屬性
   );
   
+  // 用於全選或取消全選類別
   const selectAll = () => {
+     // 根據 allSelected 的值設置所有類別的 selected 狀態
     categories.value.forEach((category) => {
       category.selected = allSelected.value;
     });
@@ -129,7 +140,7 @@ const categories = ref([
   };
   
   // 初始篩選
-  filterItems();
+  selectAll();
 
 
 

@@ -13,11 +13,13 @@
     "axios": "^1.7.2",
     "core-js": "^3.37.1",
     "leaflet.markercluster": "^1.5.3",
+    "pinia-plugin-persistedstate": "^3.2.1",
     "roboto-fontface": "*",
     "validator": "^13.12.0",
     "vee-validate": "^4.13.2",
     "vue": "^3.4.31",
     "vuetify": "^3.6.11",
+    "vuetify-use-dialog": "^0.6.11",
     "yup": "^1.4.0"
   },
   "devDependencies": {

@@ -13,83 +13,29 @@
     </v-list>
   </v-navigation-drawer>
 
-
   <v-dialog v-model="dialogOpen" persistent width="600">
-    <v-form @submit.prevent="submit" :disabled="isSubmitting">
-      <!-- Dialog 的內容 -->
-      <v-card class=" px-6 bg-grey-lighten-3 b-1" >
-        <v-card-title class="mt-5 text-center">
-          <v-btn width="250" height="50" variant="plain" :class="{ 'active-btn': isRegistering }" @click="toggleForm(true)">註冊</v-btn>
-          <v-btn width="250" height="50" variant="plain" :class="{ 'active-btn': !isRegistering }" @click="toggleForm(false)">登入</v-btn>
-        </v-card-title>
-        <v-divider></v-divider>
-        <v-card-text >
-          <!-- <template > -->
-            <v-text-field v-if="isRegistering"
-            label="服務單位"
-            minlength="3"
-            maxlength="20"
-            variant="outlined"
-            v-model="username.value.value"
-            :error-messages="username.errorMessage.value"
-            counter>
-            </v-text-field>
-            <v-text-field 
-            label="公務信箱"
-            type="email"
-            variant="outlined"
-            v-model="email.value.value"
-            :error-messages="email.errorMessage.value"
-            >
-            </v-text-field>
-            <v-text-field
-            label="密碼"
-            type="password"
-            minlength="6"
-            maxlength="20"
-            variant="outlined"
-            v-model="password.value.value"
-            :error-messages="password.errorMessage.value"
-            counter
-            >
-            </v-text-field>
-            <v-text-field v-if="isRegistering"
-            label="確認密碼"
-            type="password"
-            minlength="6"
-            maxlength="20"
-            variant="outlined"
-            v-model="passwordConfirm.value.value"
-            :error-messages="passwordConfirm.errorMessage.value"
-            counter
-            >
-            </v-text-field>
-          <!-- </template> -->
-          <!-- <template v-else>
-            <v-text-field 
-              label="公務信箱"
-              type="email"
-              v-model="loginEmail.value.value"
-              :error-messages="loginEmail.errorMessage.value"
-            ></v-text-field>
-            <v-text-field
-              label="密碼"
-              type="password"
-              minlength="6"
-              maxlength="20"
-              v-model="loginPassword.value.value"
-              :error-messages="loginPassword.errorMessage.value"
-              counter
-            ></v-text-field>
-          </template> -->
-        </v-card-text>
-        <v-card-actions class="mx-auto mb-5">
-          <v-btn color="red" @click="closeDialog">取消</v-btn>
-          <v-btn color="green" type="submit" :loading="isSubmitting">送出</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-form>
+      <!-- <template v-slot:extension> -->
+        <v-tabs
+        v-model="tabs"
+        grow
+        class="bg-secondary b-1"
+        >
+          <v-tab
+          :value="1">
+          <p class="text-h6">註冊</p>
+          </v-tab>
+          <v-tab
+          :value="2">
+          <p class="text-h6">登入</p>
+          </v-tab>
+        </v-tabs>
+      <v-tabs-window v-model="tabs">
+        <RegisterForm :closeDialog="closeDialog" @notify="showSnackbar"/>
+        <LoginForm :closeDialog="closeDialog" @notify="showSnackbar"/>
+      </v-tabs-window>
   </v-dialog>
+
+
 
   <!-- 導覽列 -->
   <v-app-bar color="primary" scroll-behavior="elevate" class="b-1">
@@ -103,20 +49,21 @@
         <template v-for="menu in menus" :key="menu.title">
         <v-menu open-on-hover transition="slide-y-transition">
           <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" :ripple="false" variant="plain" :prepend-icon="menu.icon" >
+            <v-btn v-if="menu.show" v-bind="props" :ripple="false" :prepend-icon="menu.icon" class="font-weight-black pe-1">
               {{ menu.title }}
-              <v-icon right>mdi-menu-down</v-icon>
+              <v-icon>mdi-menu-down</v-icon>
             </v-btn>
           </template>
           <v-list>
-            <v-list-item
-              v-for="(item, i) in menu.items"
-              :key="i"
-              :to="item.to"
-              link
-            >
-              <v-list-item-title>{{ item.text }}</v-list-item-title>
-            </v-list-item>
+            <template v-for="(item, i) in menu.items" :key="i">
+              <v-list-item
+                v-if="item.show"  
+                :to="item.to"
+                link
+              >
+                <v-list-item-title>{{ item.text }}</v-list-item-title>
+              </v-list-item>
+            </template>
           </v-list>
         </v-menu>
       </template>
@@ -129,7 +76,7 @@
         :prepend-icon="item.icon" 
         :to="item.to"
         :active="false"
-        class="mx-1 font-weight-black"
+        class="mx-1 font-weight-black pe-1"
         @click="handleItemClick(item)"
         >{{ item.text }}</v-btn>
       </template>
@@ -138,51 +85,49 @@
   <v-main>
     <router-view></router-view>
   </v-main>
-
 </template>
 
 <script setup>
-import { ref,computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useDisplay } from 'vuetify'
 const { mobile } = useDisplay()
-import { useForm, useField } from 'vee-validate'
-import * as yup from 'yup'
-import validator from 'validator'
-import { useApi } from '@/composables/axios'
-const { api } = useApi()
-const router = useRouter()
+
+import LoginForm from '@/components/LoginForm.vue';
+import RegisterForm from '@/components/RegisterForm.vue';
+import { useUserStore } from '@/stores/user'
+import { useSnackbar } from 'vuetify-use-dialog'
+const createSnackbar = useSnackbar()
 const drawer = ref(false)
 const dialogOpen = ref(false)
-const isRegistering = ref(true) // 判斷註冊還是登入
+const tabs = ref(1)
+
+const user = useUserStore()
 
 const menus = computed(() => {
   return [
     {
-      title: "資源地圖", icon: 'mdi-map-search',
+      title: "資源地圖", icon: 'mdi-map-search', show:!user.isLogin,
       items: [
-        { to: "/", text: "資源查詢" },
-        { to: "/", text: "新增地標"},
+        { to: "/", text: "資源查詢", show:!user.isLogin },
+        { to: "/createMark", text: "新增資源", show: user.isLogin},
       ],
     },
     {
-      title: "物資分享", icon: 'mdi-package-variant' ,
+      title: "物資分享", icon: 'mdi-package-variant' , show: user.isLogin,
       items: [
-        { to: "/", text: "我要募資" },
-        { to: "/", text: "我要分享" },
+        { to: "/findResource", text: "我要募資" , show:user.isLogin},
+        { to: "/shareResource", text: "我要分享" , show:user.isLogin},
       ],
     },
   ];
 });
 
 
-  const menuItems=[
-    { to: '/event', text: '資源地圖', icon: 'mdi-map-search' },
-    { to: '/findResource', text: '物資分享', icon: 'mdi-package-variant' }
-  ]
+
   const navItems=[
-    { to: '/findEvent', text: '活動分享', icon: 'mdi-calendar' },
-    { to: '/admin/account', text: '管理', icon: 'mdi-cog' },
-    { to:'',text:'註冊/登入',icon:'mdi-account-plus'},
+    { to: '/findEvent', text: '活動分享', icon: 'mdi-calendar', show:!user.isLogin },
+    { to: '/setting', text: '管理', icon: 'mdi-cog', show:user.isLogin },
+    { to:'',text:'註冊/登入',icon:'mdi-account-plus', show:!user.isLogin},
     ]
 
   const handleItemClick = (item) => {
@@ -193,86 +138,18 @@ const menus = computed(() => {
 
 const closeDialog = () => {
   dialogOpen.value = false
-  resetForm()
-}
-
-const toggleForm = (isRegister) => {
-  isRegistering.value = isRegister
-  resetForm()
 }
 
 
-const schema = yup.object({
-  username:yup
-    .string()
-    .required('服務單位必填')
-    .min(3,'服務單位長度不符')
-    .max(20,'服務單位長度不符'),
-  email:yup
-    .string()
-    .required('使用者信箱必填')
-    .matches(     // 限制網域只能為org、edu、gov
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(org|edu|gov)$/,
-      '必須為公務信箱， org、edu 或 gov 網域'
-    )
-    .test(
-      'isEmail', '使用者信箱格式錯誤',
-      (value) => {
-        return validator.isEmail(value)
-      }
-    ),
-    password: yup
-    .string()
-    .required('使用者密碼必填')
-    .min(6, '使用者密碼長度不符')
-    .max(20, '使用者密碼長度不符'),
-    passwordConfirm: yup
-      .string()
-      // 代表此欄位值必須與 password 欄位的值一致
-      // .oneOf(陣列, 錯誤訊息) 只允許符合陣列內其中一個值
-      // .ref('password')  代表這個 schema 的 password 的欄位值
-      .oneOf([yup.ref('password')], '密碼不一致')
-})
-
-
-
-const { handleSubmit, isSubmitting,resetForm } = useForm({
-  validationSchema: schema,
-  // 定義表單的初始值
-  initialValues:{
-    username:'',
-    email:'',
-    password:'',
-    passwordConfirm:''
-  }
-})
-
-const username = useField('username')
-const email = useField('email')
-const password = useField('password')
-const passwordConfirm = useField('passwordConfirm')
-
-
-const submit = handleSubmit(async(values)=>{
-  try{
-    if (isRegistering.value) { // 更改 5: 根據當前表單類型調用不同的 API
-      await api.post('/user', {
-        username: values.username,
-        email: values.email,
-        password: values.password
-      })
-    } else {
-      // await api.post('/user', {
-      //   email: values.email,
-      //   password: values.password
-      // })
+const showSnackbar = (message, color) => {
+  createSnackbar({
+    text: message,
+    snackbarProps: {
+      color
     }
-    router.push('/')
-  }catch(error){
-    console.log(error)
-    alert(error?.response?.data?.message||'發生錯誤')
-  }
-})
+  })
+}
+
 
 
 </script>

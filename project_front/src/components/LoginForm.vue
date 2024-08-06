@@ -1,35 +1,52 @@
-<template>
-    <v-form @submit.prevent="submit">
-        <v-text-field 
+<template >
+  <v-tabs-window-item :value="2">
+    <v-form @submit.prevent="submit" :disabled="isSubmitting">
+      <!-- Dialog 的內容 -->
+      <v-card class=" px-6 bg-grey-lighten-3 b-1 pt-5" >
+        <v-card-text >
+          <!-- <template> -->
+            <v-text-field 
               label="公務信箱"
               type="email"
+              variant="outlined"
               v-model="email.value.value"
               :error-messages="email.errorMessage.value"
             ></v-text-field>
             <v-text-field
               label="密碼"
               type="password"
+              variant="outlined"
               minlength="6"
-              maxlength="20"
               v-model="password.value.value"
               :error-messages="password.errorMessage.value"
               counter
             ></v-text-field>
+          <!-- </template> -->
+        </v-card-text>
+        <v-card-actions class="mx-auto mb-5">
+          <v-btn color="red" @click="handleClose">取消</v-btn>
+          <v-btn color="green" type="submit" :loading="isSubmitting">送出</v-btn>
+        </v-card-actions>
+      </v-card>
     </v-form>
+
+
+  </v-tabs-window-item>
+    
 </template>
 
-
 <script setup>
-import { ref } from 'vue'
-import { useDisplay } from 'vuetify'
-const { mobile } = useDisplay()
 import { useForm, useField } from 'vee-validate'
 import * as yup from 'yup'
+import { useRouter } from 'vue-router'
 import validator from 'validator'
-
-
-
-
+import { useUserStore } from '@/stores/user'
+import { useSnackbar } from 'vuetify-use-dialog'
+const emit = defineEmits(['notify'])
+const props = defineProps(['closeDialog'])
+const router = useRouter()
+const user = useUserStore()
+const createSnackbar = useSnackbar()
 
 const loginSchema = yup.object({
   email: yup
@@ -56,27 +73,34 @@ const email = useField('email')
 const password = useField('password')
 
 
-const submit = handleSubmit(async(values)=>{
-  try{
-    if (isRegistering.value) { // 更改 5: 根據當前表單類型調用不同的 API
-      await api.post('/user', {
-        email: values.email,
-        password: values.password
-      })
-    } else {
-      // await api.post('/user', {
-      //   email: values.email,
-      //   password: values.password
-      // })
-    }
+const submit = handleSubmit(async (values) => {
+  // console.log(values) // 有東西的，信箱、密碼
+  const result = await user.login(values)
+  console.log(result)
+  if (result === '登入成功') {
+    createSnackbar({
+      text: result,
+      snackbarProps: {
+        color: 'green'
+      }
+    })
+    props.closeDialog()
     router.push('/')
-  }catch(error){
-    console.log(error)
-    alert(error?.response?.data?.message||'發生錯誤')
+  } else {
+    createSnackbar({
+      text: result,
+      snackbarProps: {
+        color: 'red'
+      }
+    })
   }
 })
 
-
+const handleClose = () => {
+  if (props.closeDialog) {
+    props.closeDialog()
+  }
+}
 </script>
 <style scoped>
 .b-1{
