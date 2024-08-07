@@ -21,6 +21,7 @@
       ></v-list-item>
     </v-list>
   </v-navigation-drawer>
+  
   <!-- 主要內容區域 -->
   <v-main>
     <router-view></router-view>

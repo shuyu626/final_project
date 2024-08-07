@@ -43,8 +43,8 @@ export const login = async (req, res) => {
 
     // 將生成的 token 加入使用者的 tokens 屬性中
     req.user.tokens.push(token)
-    console.log(req.user.role) // 可以console來看資料是否進來
-    console.log(token)
+    // console.log(req.user.role) // 可以console來看資料是否進來
+    // console.log(token)
     // 將使用者物件保存到資料庫中，包括更新後的 tokens 屬性
     await req.user.save()
     // 返回成功的 HTTP 狀態碼和包含使用者資訊的 JSON 回應

@@ -6,7 +6,7 @@ import { useApi } from '@/composables/axios'
 
 // 定義使用者狀態管理的 Pinia store
 export const useUserStore = defineStore('user', () => {
-  const { api, apiAuth } = useApi()// 使用 useApi 自訂鉤子獲取非授權 API 實例
+  const { api, apiAuth } = useApi()
 
  
   const token = ref('') 
@@ -26,8 +26,7 @@ export const useUserStore = defineStore('user', () => {
   // 如果登入成功，會將回應的 token、使用者帳號、角色和購物車資訊儲存在相應的狀態變數中。若發生錯誤，則會返回錯誤訊息
   const login = async (values) => {
     try {
-      // 發送 POST 請求到 /user/login 路徑
-      // data 是使用者登入後的資訊
+      // 發送 POST 請求到 /user/login 路徑 // data 是使用者登入後的資訊
       const { data } = await api.post('/user/login', values) // 這裡只要寫後端的路徑是因為我們composables有定義baseURL基準點的概念
       // 成功登入後，從 data.result 中提取相應的資料並存儲在不同的 ref 中
       token.value = data.result.token // 儲存登入後的 token

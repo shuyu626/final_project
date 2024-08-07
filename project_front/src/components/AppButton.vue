@@ -1,5 +1,6 @@
 <template>
     <v-btn
+        type="submit"
         :text="text"
         variant="text"
         class="rounded-xl b-1"

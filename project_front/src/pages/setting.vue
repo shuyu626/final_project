@@ -96,7 +96,17 @@
             </v-data-table-server>
             <h4 style="margin-left: 200px;" class="my-5">我要分享</h4>
            <v-data-table-server
+                v-model:items-per-page="tableItemsPerPage"
+                v-model:sort-by="tableSortBy"
+                v-model:page="tablePage"
+                :items="tableItems"
                 :headers="tableHeaders"
+                :loading="tableLoading"
+                :items-length="tableItemsLength"
+                :search="tableSearch"
+                @update:items-per-page="tableLoadItems(false)"
+                @update:sort-by="tableLoadItems(false)"
+                @update:page="tableLoadItems(false)"
                 hover
                 class="w-75 mx-auto b-1 rounded-lg "
               >
@@ -108,6 +118,7 @@
                 <v-btn icon="mdi-delete" variant="text" color="blue" @click="openDialog(item)"></v-btn>
               </template>
             </v-data-table-server>
+            <!-- 活動貼文管理 -->
             <h4 style="margin-left: 200px;" class="my-5">活動管理</h4>
            <v-data-table-server
                 :headers="tableHeaders"
@@ -172,6 +183,9 @@ const members=ref([
 ])
 
 
+
+
+
 const tableHeaders = [
   { title: '服務名稱', align: 'center', key: 'image' },
   { title: '服務項目', align: 'center', key: 'name' },
@@ -183,6 +197,40 @@ const eventmark = ([
   {img:'	https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5jYNdL7EfoBGgHMaYkwvlXLCCyHJ26Wf8Zw&s', name:'溝通與應對技巧暨失智友善天使',organitation:'新北市家庭照顧者支持服務據點',number:''},
   {img:'	https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTt8pdrxch_n_mzicIbK-Wrtpin4V23Dd-Wkw&s', name:'遺物整理與悲傷輔導',organitation:'台北市攸惜關懷協會',number:''},
 ])
+
+
+
+
+
+// 一頁10個
+const tableItemsPerPage = ref(10)
+// 可以一次支援很多欄位去做排序，前端要支援這個功能的話後端的api就要把這個功能寫出來(這裡只舉一個欄位做排序)
+const tableSortBy = ref([
+  { key: 'createdAt', order: 'desc' } // createdAt建立的日期 ， order代表正序或倒序(desc 倒序)
+])
+const tablePage = ref(1) // 表格被翻到哪一頁，預設在第一頁
+const tableItems = ref([])
+const tableHeaders = [ // 因為欄位是固定的，所以不用ref
+// align 靠哪邊排，sortable 欄位可不可以排序，key 要跟資料庫的欄位對到(會自動把符合的key的值帶進這個欄位)
+
+// 圖片會直接以文字的方法顯示(直接把image的資料放上來)，因為他會當成是一般的文字，不會顯示圖片
+// 可以在上面 template 上面定義資料的顯示方式
+{ title: '圖片', align: 'center', sortable: false, key: 'image' }, 
+  { title: '活動名稱', align: 'center', sortable: false, key: 'title' },
+  { title: '活動地點', align: 'center', sortable: false, key: 'address' },
+  { title: '活動類別', align: 'center', sortable: true, key: 'category' },
+  { title: '活動時間', align: 'center', sortable: true, key: 'date' },
+  { title: '主辦單位', align: 'center', sortable: false, key: 'organizer' },
+  { title: '活動介紹', align: 'center', sortable: false, key: 'description' },
+  { title: '操作', align: 'center', sortable: false, key: 'action' }
+]
+const tableLoading = ref(true) // 進來頁面時是讀取狀態
+const tableItemsLength = ref(0) // 全部有多少筆資料
+const tableSearch = ref('') // 搜尋的文字
+
+
+
+
 
 </script>
   

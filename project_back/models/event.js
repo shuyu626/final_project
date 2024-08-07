@@ -1,7 +1,7 @@
 import { Schema, model, ObjectId } from 'mongoose'
 
 const schema = new Schema({
-  img: {
+  image: {
     type: String,
     required: [true, '活動圖片必填']
   },
@@ -10,7 +10,7 @@ const schema = new Schema({
     required: [true, '活動標題必填']
   },
   date: {
-    type: Date,
+    type: String,
     required: [true, '活動日期必填']
   },
   address: {
@@ -21,7 +21,7 @@ const schema = new Schema({
     type: String,
     required: [true, '活動分類必填'],
     enum: {
-      values: ['老人', '兒少', '精神', '身障', '婦女'],
+      values: ['兒童', '青少年', '育兒', '長照', '精神', '照顧', '就學', '就業', '身障', '親職教育', '早療', '紓壓', '居住', '醫療', '司法', '社工', '其他'],
       message: '活動分類錯誤'
     }
   },
@@ -35,8 +35,7 @@ const schema = new Schema({
   },
   user: { // 創建活動的用戶
     type: ObjectId,
-    ref: 'users',
-    required: true
+    ref: 'users'
   }
 }, {
   timestamps: true, // 使用者建立時間，會多建立兩個欄位一個是帳號建立時間和更新時間

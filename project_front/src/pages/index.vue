@@ -33,9 +33,9 @@
 
 
             <v-toolbar density="compact">
-                <v-toolbar-subtitle class=ms-5>
+                <v-toolbar-title class="ms-5 text-body-1">
                         選擇服務
-                </v-toolbar-subtitle>
+                </v-toolbar-title>
             </v-toolbar>
             <v-expansion-panels  variant="accordion">
                 <v-expansion-panel
@@ -78,7 +78,7 @@ const title=['資源地圖','服務查詢']
   { name: '兒少', subcategories: ['青少年服務中心', '家扶中心', '少觀所'] },
   { name: '社會救助', subcategories: ['基金會','社會福利中心'] }
 ]);
-
+const selectedSubcategories = ref([])
 // 縣市篩選
 const cities = ref([]);
 const areas = ref([]);
@@ -91,7 +91,7 @@ const requiredCities = ['台北市', '新北市'];
 const loadData = async () => {
   try {
     const response = await axios.get('https://gist.githubusercontent.com/Wcc723/ac712d2bb5c4e61df99d7c5b7f3746e1/raw/2ebe2f94c3bbbeec254159b7dfe71a007f1696cd/tw-zipcode.json');
-    console.log('Data loaded:', response.data)
+    // console.log('Data loaded:', response.data) // 確定有抓到檔案資料
     processData(response.data);
   } catch (error) {
     console.error('Error loading JSON file:', error);
@@ -110,8 +110,8 @@ Object.keys(data).forEach(city => {
     }
 });
 
-  console.log('Cities:', cityList); // 新北市、台北市
-  console.log('City Area Map:', cityAreaMapping); // 台北市、新北市的縣市區域
+  // console.log('Cities:', cityList); // 新北市、台北市
+  // console.log('City Area Map:', cityAreaMapping); // 台北市、新北市的縣市區域
   cities.value = cityList;
   cityAreaMap.value = cityAreaMapping;
 };

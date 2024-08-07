@@ -8,17 +8,23 @@
         density="comfortable"
         clearable
         dense
+        v-bind="$attrs"
+        @input="$emit('update:label', $event)"
+        :error-messages="errorMessages"
         >
         </v-text-field>
     </v-responsive>
 </template>
 <script setup>
-import { defineProps } from 'vue';
+import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps({
   label: {
     type: String,
-    default: '輸入文字'
-  }
+    default: '輸入文字',
+  },
+  errorMessages: String
 });
+
+const emit = defineEmits(['update:label'])
 </script>

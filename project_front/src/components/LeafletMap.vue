@@ -49,16 +49,24 @@ onMounted(() => {
       const data = response.data;
 
       // 將 JSON 資料中的每個地標添加到地圖
-      data.forEach((item) => {
-        L.marker([item.lat, item.lng], { icon: greenIcon })
+    data.forEach((item) => {
+      // 先確保經緯度是有效的數字(json格式有誤)
+      const lat = parseFloat(item.lat);
+      const lng = parseFloat(item.lng);
+
+      // 確保經緯度在有效範圍內
+      if (isFinite(lat) && isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+        L.marker([lat, lng], { icon: greenIcon })
           .addTo(initialMap.value)
-          .bindPopup(`<h2>${item.name}</h2>`)
-          // .openPopup();
-      });
-    } catch (error) {
-      console.error('Error fetching JSON data:', error);
-    }
-  };
+          .bindPopup(`<h2>${item.name}</h2>`);
+      } else {
+        console.warn(`Invalid coordinates for item: ${JSON.stringify(item)}`);
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching JSON data:', error);
+  }
+};
 
   fetchDataAndInitializeMap();
 });

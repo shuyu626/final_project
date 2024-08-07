@@ -69,9 +69,9 @@
       </template>
 
 
-
+      <template v-for="item in navItems" >
         <v-btn 
-        v-for="item in navItems" 
+        v-if="item.show"
         :key="item.to" 
         :prepend-icon="item.icon" 
         :to="item.to"
@@ -79,6 +79,8 @@
         class="mx-1 font-weight-black pe-1"
         @click="handleItemClick(item)"
         >{{ item.text }}</v-btn>
+      </template>
+      <v-btn class="mx-1" prepend-icon="mdi-account-arrow-right" v-if="user.isLogin" @click="logout">登出</v-btn>
       </template>
     </v-container>
   </v-app-bar>
@@ -106,17 +108,17 @@ const user = useUserStore()
 const menus = computed(() => {
   return [
     {
-      title: "資源地圖", icon: 'mdi-map-search', show:!user.isLogin,
+      title: "資源地圖", icon: 'mdi-map-search', show:user.isLogin,
       items: [
-        { to: "/", text: "資源查詢", show:!user.isLogin },
-        { to: "/createMark", text: "新增資源", show: user.isLogin},
+        { to: "/", text: "資源查詢", show:user.isLogin },
+        { to: "/map/createMark", text: "新增資源", show: user.isLogin},
       ],
     },
     {
       title: "物資分享", icon: 'mdi-package-variant' , show: user.isLogin,
       items: [
-        { to: "/findResource", text: "我要募資" , show:user.isLogin},
-        { to: "/shareResource", text: "我要分享" , show:user.isLogin},
+        { to: "/material/findMaterial", text: "我要募資" , show:user.isLogin},
+        { to: "/material/shareMaterial", text: "我要分享" , show:user.isLogin},
       ],
     },
   ];
@@ -125,7 +127,8 @@ const menus = computed(() => {
 
 
   const navItems=[
-    { to: '/findEvent', text: '活動分享', icon: 'mdi-calendar', show:!user.isLogin },
+    { to: '/', text: '資源地圖', icon: 'mdi-map-search', show:!user.isLogin },
+    { to: '/event/findEvent', text: '活動分享', icon: 'mdi-calendar', show:true},
     { to: '/setting', text: '管理', icon: 'mdi-cog', show:user.isLogin },
     { to:'',text:'註冊/登入',icon:'mdi-account-plus', show:!user.isLogin},
     ]
@@ -150,7 +153,15 @@ const showSnackbar = (message, color) => {
   })
 }
 
-
+const logout = async () => {
+  await user.logout()
+  createSnackbar({
+    text: '登出成功',
+    snackbarProps: {
+      color: 'green'
+    }
+  })
+}
 
 </script>
 <style scoped>
