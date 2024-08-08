@@ -78,7 +78,7 @@
                                         <v-col cols="3" class="my-auto text-center px-0">
                                             <label class="form-label">活動時間：</label>
                                         </v-col>
-                                        <v-col cols="3" class="">
+                                        <v-col cols="3" >
                                             <!-- <v-date-input
                                             v-model="model"
                                             label="選擇日期"
@@ -134,15 +134,13 @@
                             </v-card-actions>
                                 </v-form>
                             </v-card-text>
-
-                            
                         </v-container>
                     </v-card>
             </v-dialog>
 
 
         <!-- 搜尋欄 -->
-         <v-container>
+        <v-container>
             <!-- 麵包屑 - 顯示目前頁面位置 -->
             <breadcrumbs :title="webtitle"></breadcrumbs>
             <search class="mx-auto" max-width="700px"></search>
@@ -173,17 +171,23 @@
                             </v-slide-group-item>
                         </v-slide-group>
                     </v-sheet>
-                <v-row justify="center" v-for="r in 3" :key="r" class="my-3">
+                  <v-row justify="center" class="my-3">
+                    <v-col cols="12" md="4" lg="2" v-for="event in events" :key="event._id">
+                        <card class="cursor-pointer" v-bind="event"></card>
+                    </v-col>
+                  </v-row>
+                <!-- <v-row justify="center" v-for="r in 3" :key="r" class="my-3">
                     <v-col cols="12" md="4" lg="2" v-for="c in 4" :key="c">
                         <card class="cursor-pointer"></card>
                     </v-col>
-                </v-row>
+                </v-row> -->
             </div>
             <!-- 上下頁 -->
             <div class="text-center my-5">
                 <v-pagination
                 v-model="page"
-                :length="3"
+                :length="pages"
+                @update:model-value="loadEvents"
                 rounded="circle"
                 ></v-pagination>
             </div>
@@ -192,7 +196,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { definePage } from 'vue-router/auto'
 // import { VDateInput } from 'vuetify/labs/VDateInput'
 import * as yup from 'yup'
@@ -200,14 +204,19 @@ import { useForm, useField } from 'vee-validate'
 import { useApi } from '@/composables/axios'
 import { useSnackbar } from 'vuetify-use-dialog'
 
-const { apiAuth } = useApi()
+const { api, apiAuth } = useApi()
 const createSnackbar = useSnackbar()
 
 const webtitle=ref(['活動分享','活動查詢'])
 const chips=['兒童','青少年','育兒','長照','精神','照顧','就學','就業','身障','親職教育','早療','紓壓','居住','醫療','司法','社工','其他']
-const selectedChips = ref([]);
-const page=ref(1)
-const model = ref(null);
+
+const page = ref(1) // 現在第幾頁
+const pages = ref(1) // 全部有幾頁
+const ITEMS_PER_PAGE = 12 // 一頁12個
+const events = ref([])
+
+
+// const model = ref(null);
 const fileAgent = ref(null)
 const dialog = ref(false)
 
@@ -327,6 +336,35 @@ const submit = handleSubmit(async (values) => {
     })
   }
 })
+
+
+
+
+
+
+// 加載商品資料
+const loadEvents = async () => {
+  try {
+    const { data } = await api.get('/event', { // 從後端取得商品資訊
+      params: { 
+        itemsPerPage: ITEMS_PER_PAGE, // 傳參數過去讓後端知道一頁有幾個
+        page: page.value
+      }
+    })
+    pages.value = Math.ceil(data.result.total / ITEMS_PER_PAGE) // 總頁數 = 總商品數量 / 每頁數量
+    events.value.splice(0, events.value.length, ...data.result.data) // 更新前端的商品列表
+  } catch (error) {
+    console.log(error)
+    createSnackbar({
+      text: error?.response?.data?.message || '發生錯誤',
+      snackbarProps: {
+        color: 'red'
+      }
+    })
+  }
+}
+loadEvents()
+
 
 
 </script>

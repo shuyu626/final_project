@@ -1,8 +1,7 @@
 
 <template>
     <!-- 物資card -->
-    <v-container>
-      <!-- 麵包屑 - 顯示目前頁面位置 -->
+    <!-- <v-container>
     <breadcrumbs :title="title"></breadcrumbs>
     <v-divider width="200" color="red" thickness="5"></v-divider>
         <v-row class="mx-5">
@@ -20,14 +19,45 @@
                             <v-card-title>{{ item.name }}</v-card-title>
                             <v-card-subtitle>{{ item.organitation }}</v-card-subtitle>
                             <v-card-text >數量：{{ item.number }}</v-card-text>
-                            <AppButton text="詳細說明" class="bg-third" to="/material/needInfo"></AppButton>
+                            <AppButton text="詳細說明" class="bg-third" to="/material/provideInfo"></AppButton>
                         </v-col>
                     </v-row>                
                 </v-card>
             </v-col>
         </v-row>
+    </v-container> -->
+    <v-container>
+    <breadcrumbs :title="webtitle"></breadcrumbs>
+    <v-divider width="200" color="red" thickness="5"></v-divider>
+        <v-row class="mx-5">
+            <v-col
+            v-for="provide in provides"
+            :key="provide._id"
+            cols="12"
+            sm="6">
+                <v-card width="550px" height="300px" variant="flat" >
+                    <v-row class="align-content-center">
+                        <v-col cols="6 ml-15 ">
+                          <div style="width: 260px;height:260px;" class="d-flex justify-content-center b-1">
+                            <v-img :src="provide.image" contain ></v-img>
+                          </div>
+                        </v-col>
+                        <v-col cols="4">
+                            <v-card-title>{{ provide.name }}</v-card-title>
+                            <v-card-subtitle>{{ provide.organizer }}</v-card-subtitle>
+                            <v-card-text >數量：{{ provide.quantity }}</v-card-text>
+                            <router-link :to="'/material/'+ _id">
+                              <AppButton text="詳細說明" class="bg-third" ></AppButton>
+                            </router-link>
+                        </v-col>
+                    </v-row>                
+                </v-card>
+            </v-col>
+            <v-col cols="12">
+              <v-pagination v-model="page" :length="pages" rounded="circle" @update:model-value="loadProvides"></v-pagination>
+            </v-col>
+        </v-row>
     </v-container>
-
 
 
     <!-- 側邊欄 -->
@@ -68,16 +98,25 @@
 
 </template>
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { definePage } from 'vue-router/auto'
+import { useApi } from '@/composables/axios'
+import { useSnackbar } from 'vuetify-use-dialog'
+
+const { api } = useApi()
+const createSnackbar = useSnackbar()
 definePage({
   meta: {
     title: ' | 我要分享'
   }
 })
 
+const webtitle=ref(['物資分享','我想分享'])
 
-const title=ref(['物資分享','我想分享'])
+const props = defineProps(['_id','name','quantity','category','description','image'])
+
+
+
 
 const categories = ref([
 { name: '食品', selected: false },
@@ -143,6 +182,39 @@ filterItems();
 
 // 初始篩選
 selectAll();
+
+
+
+
+
+const page = ref(1) // 現在第幾頁
+const pages = ref(1) // 全部有幾頁
+const ITEMS_PER_PAGE = 8 // 一頁20個 // 老師習慣完全不會改的變數名稱用大寫
+
+const provides = ref([])
+// 加載商品資料
+const loadProvides = async () => {
+  try {
+    const { data } = await api.get('/material', { // 從後端取得商品資訊
+      params: { 
+        itemsPerPage: ITEMS_PER_PAGE, // 傳參數過去讓後端知道一頁有幾個
+        page: page.value
+      }
+    })
+    pages.value = Math.ceil(data.result.total / ITEMS_PER_PAGE) // 總頁數 = 總商品數量 / 每頁數量
+    provides.value.splice(0, provides.value.length, ...data.result.data) // 更新前端的商品列表
+  } catch (error) {
+    console.log(error)
+    createSnackbar({
+      text: error?.response?.data?.message || '發生錯誤',
+      snackbarProps: {
+        color: 'red'
+      }
+    })
+  }
+}
+loadProvides()
+
 
 
 

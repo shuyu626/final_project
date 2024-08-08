@@ -20,14 +20,31 @@ router.beforeEach(async (to, from, next) => {
   if (from === START_LOCATION) { 
     await user.profile()
   }
-  // 可以在這個時機向後端拿使用者的資料
-  // 一定要呼叫 next 才會繼續下一步
   next()
+  //  next() 可以放路由或網址，做重新導向，或擋一些東西
+  // 如果使用者有登入的話，他要去註冊或是登入頁面的話，就next重新導向到首頁
+  // to 是要去哪一頁，如果要去的那頁的路徑有包含登入或註冊就把他丟到首頁
+  // if (user.isLogin && ['/register', '/login'].includes(to.path)) {
+  // next('/')
+  // // 需要登入的頁面，但沒有登入的話丟到登入頁
+  // } else if (to.meta.login && !user.isLogin) {
+  //   next('/login')
+  //   // 要去的頁面需要管理員，但他不是管理員的話，丟回首頁
+  // } else if (to.meta.admin && !user.isAdmin) {
+  //   next('/')
+  // } else {
+  //   next()
+  // }
 })
+
 
 router.afterEach((to, from) => {
   document.title = to.meta.title
 })
+
+
+
+
 
 
 // Workaround for https://github.com/vitejs/vite/issues/11804

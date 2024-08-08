@@ -1,36 +1,33 @@
 <template>
-     <v-dialog max-width="600">
-        <!-- activatorProps 是由 v-dialog 提供的綁定道具，確保觸發器按鈕與對話框的打開狀態相關聯 -->
-        <template #activator="{ props: activatorProps }">
-            <v-btn
-            prepend-icon="mdi-plus"
-            class="rounded-lg bg-info b-1 font-weight-black text-body-1 mt-10"
-            variant="text"
-            height="50"
-            width="150"
-            v-bind="activatorProps"
-            id="create"
-            :ripple="false"
-            >
-            {{cardTitle}}
+     <v-btn
+                @click="openDialog(null)"
+                class="rounded-lg bg-info b-1 font-weight-black text-body-1 mt-10"
+                prepend-icon="mdi-plus"
+                variant="text"
+                height="50"
+                width="150"
+                id="create"
+                :ripple="false"
+                >發布需求
             </v-btn>
-        </template>
-            <!-- 定義了對話框打開時顯示的內容。插槽道具 { isActive } 用於控制對話框的打開和關閉狀態 -->
-            <template #default="{ isActive }">
+            <v-dialog max-width="600" v-model="dialog">
                 <v-card>
                     <v-container>
                         <v-card-title class="font-weight-black text-center text-h4">{{cardTitle}}</v-card-title>   
                         <v-card-text>
-                            <v-form>
+                            <v-form @submit.prevent="submit" :disabled="isSubmitting">
                                 <v-row>
                                     <v-col >
                                         <!-- plugins > index.js 要先引入套件 -->
                                         <vue-file-agent
+                                            v-model="fileRecords"
+                                            v-model:raw-model-value="rawFileRecords"
                                             accept="image/jpeg,image/png"
                                             deletable
                                             max-size="1MB"
                                             help-text="選擇檔案或拖曳到這裡"
                                             :error-text="{ type: '檔案格式不支援', size: '檔案大小不能超過 1MB' }"
+                                            ref="fileAgent"
                                         ></vue-file-agent>
                                     </v-col>
                                 </v-row>
@@ -40,14 +37,20 @@
                                     <label class="form-label">物資名稱</label>
                                     </v-col>
                                     <v-col cols="12" md="9">
-                                        <inputText/>
+                                        <inputText
+                                        v-model="name.value.value"
+                                        :error-messages="name.errorMessage.value"
+                                        />
                                     </v-col>
                                     <!-- 需求量 -->
                                     <v-col cols="12" md="3" class="my-auto text-left ps-6">
                                     <label class="form-label">{{numberTitle}}</label>
                                     </v-col>
                                     <v-col cols="12" md="9">
-                                        <inputText/>
+                                        <inputText
+                                        v-model=" quantity.value.value"
+                                        :error-messages=" quantity.errorMessage.value"
+                                        />
                                     </v-col>
                                      <!-- 物資類別 -->
                                      <v-col cols="12" md="3" class="my-auto text-left ps-6">
@@ -55,6 +58,8 @@
                                     </v-col>
                                     <v-col cols="12" md="9">
                                         <v-select
+                                            v-model=" category.value.value"
+                                            :error-messages=" category.errorMessage.value"
                                             label="選擇" 
                                             variant="outlined" 
                                             density="comfortable" 
@@ -68,32 +73,52 @@
                                         <label class="form-label" >{{descriptionTitle}}</label>
                                     </v-col>
                                     <v-col cols="12" md="9">
-                                        <inputText/>
+                                        <inputText
+                                        v-model=" description.value.value"
+                                        :error-messages=" description.errorMessage.value"
+                                        />
+                                    </v-col>
+                                    <!-- 單位名稱 -->
+                                    <v-col cols="12" md="3" class="my-auto text-left ps-6">
+                                    <label class="form-label">單位名稱</label>
+                                    </v-col>
+                                    <v-col cols="12" md="9">
+                                        <inputText
+                                        v-model="organizer.value.value"
+                                        :error-messages="organizer.errorMessage.value"
+                                        />
                                     </v-col>
                                 </v-row>
+                                <v-card-actions>
+                                    <div class="mx-auto">
+                                    <v-btn variant="text"class="rounded-xl b-1" density="comfortable" type="submit" :loading="isSubmitting">送出</v-btn>
+                                    <v-btn
+                                    text="取消"
+                                    variant="text"
+                                    class="rounded-xl b-1"
+                                    density="comfortable"
+                                    @click="closeDialog()"
+                                    ></v-btn>
+                                </div>
+                            </v-card-actions>
                             </v-form>
                         </v-card-text>
-
-                        <v-card-actions>
-                            <div class="mx-auto">
-                                <AppButton></AppButton>
-                                <!-- 關閉對話框的按鈕 -->
-                                <!-- @click="isActive.value = false"：點擊按鈕時，將 isActive.value 設置為 false，從而關閉對話框 -->
-                                <v-btn
-                                text="取消"
-                                variant="text"
-                                class="rounded-xl b-1"
-                                density="comfortable"
-                                @click="isActive.value = false"
-                                ></v-btn>
-                            </div>
-                        </v-card-actions>
                     </v-container>
                 </v-card>
-            </template>
-        </v-dialog>
+            </v-dialog>
+
 </template>
 <script setup>
+import { ref } from 'vue'
+import * as yup from 'yup'
+import { useForm, useField } from 'vee-validate'
+import { useApi } from '@/composables/axios'
+import { useSnackbar } from 'vuetify-use-dialog'
+
+const { apiAuth } = useApi()
+const createSnackbar = useSnackbar()
+
+
 const props = defineProps({
     cardTitle: {
         type: String,
@@ -108,7 +133,118 @@ const props = defineProps({
         default:'需求介紹'
     }
 });
-const categories = ['食品', '服飾配件', '日用品', '家具', '輔具', '教育用品', '嬰幼兒用品', '休閒用品', '其他']
+const categories = ['食品', '服飾配件', '日用品', '家具', '輔具', '教育用品', '嬰幼兒用品', '電器','休閒用品', '其他']
+
+
+
+const dialog = ref(false)
+const openDialog = (item) => {
+  dialog.value = true
+}
+
+const closeDialog = () => {
+  dialog.value = false
+  resetForm()
+  fileAgent.value.deleteFileRecord() 
+}
+
+// 上傳圖片
+const fileAgent = ref(null)
+const fileRecords = ref([]) // 綁定處理後的文件記錄
+const rawFileRecords = ref([]) // 綁定原始文件記錄
+
+
+const schema = yup.object({
+  name: yup
+    .string()
+    .required('物品名稱必填'),
+  quantity: yup
+    .string()
+    .min(1, '物品數量不符')
+    .required('物品數量必填'),
+  category: yup
+    .string()
+    .required('物品分類必填')
+    // 自訂驗證規則，檢查分類是否在預定一的 categories 中
+    // isCategory 驗證名稱可自定義，第二個是錯誤訊息，第三個是驗證的function
+    .test('isCategory', '商品分類錯誤', value => {
+      return categories.includes(value) // 分類的陣列有沒有包含這個值
+    }),
+  description: yup
+    .string()
+    .required('物資介紹必填'),
+  organizer: yup
+    .string()
+    .required('單位名稱必填'),
+})
+
+
+const { handleSubmit, isSubmitting, resetForm } = useForm({
+  // validationSchema 用於驗證表單的各個字段，確保所有字段都符合預期的格式和要求
+  // 定義表單的驗證格式是上面定義的東東
+  validationSchema: schema,
+  // initialValues  定義表單的初始值(表單在第一次渲染時會有預設的值)
+  initialValues: {
+    name: '', 
+    quantity: '0', // 初始值是0
+    category: '',
+    description: '',
+    organizer:''
+  }
+})
+const name = useField('name')
+const quantity = useField('quantity')
+const category = useField('category')
+const description = useField('description')
+const organizer = useField('organizer')
+
+const submit = handleSubmit(async (values) => {
+  // ?.沒選檔案的時候是undefined，if不會過 > return
+  if (fileRecords.value[0]?.error) return 
+  if (fileRecords.value.length < 1) return
+  // 建立 FormData 物件並添加要上傳的資料
+  
+  try {
+    // 要先建立 FormData 物件，然後把東西放進去
+    // 用append方法把要放進formdata的資料放進去
+    const fd = new FormData()
+    // fd.append(key, value)
+    fd.append('name', values.name)
+    fd.append('quantity', values.quantity)
+    fd.append('category', values.category)
+    fd.append('description', values.description)
+    fd.append('organizer', values.organizer)
+    if (fileRecords.value.length > 0) {
+      fd.append('image', fileRecords.value[0].file)
+    }
+    console.log(fd)
+    await apiAuth.post('/material', fd) 
+    createSnackbar({
+      text: '新增成功' ,
+      snackbarProps: {
+        color: 'green'
+      }
+    })
+    closeDialog()
+  } catch (error) {
+    console.log(error)
+    createSnackbar({
+      text: error?.response?.data?.message || '發生錯誤',
+      snackbarProps: {
+        color: 'red'
+      }
+    })
+  }
+})
+
+
+
+
+
+
+
+
+
 </script>
 <style scoped>
 .b-1{

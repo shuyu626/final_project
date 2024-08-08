@@ -1,13 +1,13 @@
 <template>
     <v-container>
-        <breadcrumbs :title=title></breadcrumbs>
+        <breadcrumbs :title=webtitle></breadcrumbs>
         <v-row justify-center class="mt-5">
             <v-col cols="5" class="d-flex justify-center">
                 <v-img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEtCIj3EIjTq8B1SC1jrGfU0sLM9UjO4e10A&s" class="b-1" max-width="400" max-height="400" cover></v-img>
             </v-col>
             <v-col cols="5">
                 <v-card variant="flat" id="resourceCard">
-                    <v-card-title class="font-weight-black mb-2">成人紙尿褲</v-card-title>
+                    <v-card-title class="font-weight-black mb-2">{{provide.name}}</v-card-title>
                     <v-divider thickness="0"></v-divider>
                     <v-row>
                         <!-- 活動名稱 -->
@@ -135,7 +135,7 @@
                 <div class="b-1 pa-5 info-margin">
                 <div class="pa-4 ">
                     <v-avatar color="primary b-1" class="me-3" size="large">
-                        <v-img src="https://p3-pc-sign.douyinpic.com/tos-cn-i-0813/1f6f82cb0eb548dcb989e98bdc8975d6~tplv-dy-aweme-images:q75.webp?biz_tag=aweme_images&from=327834062&s=PackSourceEnum_SEARCH&sc=image&se=false&x-expires=1724760000&x-signature=ag9bDxZ3u5MCbLfOT6%2FyZdqsE0Y%3D"></v-img>
+                        <v-img :src="provide.image"></v-img>
                     </v-avatar>
                     <span>照管中心</span>
                     <p class="ml-13 text-body-2">您好，請問周末親送過去可以嗎?</p>
@@ -180,32 +180,79 @@
 </template>
 <script setup>
 import { VNumberInput } from 'vuetify/labs/VNumberInput'
-    const title=['物資分享','我要募資','物資詳情']
-    const cardtext = [
-        '需求單位',
-        '新北市政府社會局',
-        '類別',
-        '日用品',
-        '尺寸/品牌',
-        'L/不限品牌',
-        '需求介紹',
-        '為罹癌臥床的頸髓會員募集成人紙尿布(全新、尺寸L)、看護墊(全新、尺寸XL)、純水濕紙巾(全新)，讓會員擁有更良好療養照顧及生活品質。',
-        '所需數量',
-        '2包'
-    ]
-    const textarea = ref(null);
+import { ref } from 'vue'
+import { definePage } from 'vue-router/auto'
+import { useRoute } from 'vue-router'
+import { useApi } from '@/composables/axios'
+import { useSnackbar } from 'vuetify-use-dialog'
 
-    function scrollTo(selector) { // 找到想滾動到的元素css選擇器
-        const element = document.querySelector(selector);
-        if (element) { 
-            // scrollIntoView 方法使該元素滾動到視窗內部
-            // behavior: 'smooth' 使滾動效果平滑過渡，而不是瞬間跳轉
-            element.scrollIntoView({ behavior: 'smooth' });
-            nextTick(() => { // 滾動後再執行
-                textarea.value.focus();
-            });
-        }
+const { api } = useApi()
+const route = useRoute()
+const createSnackbar = useSnackbar()
+const webtitle=['物資分享','我要募資','物資詳情']
+definePage({
+  meta: {
+    title: 'keeperS | 物資',
+    login: false,
+    admin: false
+  }
+})
+
+const provide = ref({
+  _id: '',
+  name: '',
+  quantity: 0, // 預設0
+  category: '',
+  description: '',
+  image: '',
+})
+
+
+
+
+const textarea = ref(null);
+
+
+const load = async () => {
+  try { // 透過'/material/' + route.params.id 來取得特定商品的資料
+    const { data } = await api.get('/material/' + route.params.id)
+    provide.value._id = data.result._id
+    provide.value.name = data.result.name
+    provide.value.quantity = data.result.quantity
+    provide.value.category = data.result.category
+    provide.value.description = data.result.description
+    provide.value.image = data.result.image
+  } catch (error) {
+    console.log(error)
+    createSnackbar({
+      text: error?.response?.data?.message || '發生錯誤',
+      snackbarProps: {
+        color: 'red'
+      }
+    })
+  }
+}
+load()
+
+
+
+
+
+
+
+
+// 點擊我要留言按鈕跳到留言板
+function scrollTo(selector) { // 找到想滾動到的元素css選擇器
+    const element = document.querySelector(selector);
+    if (element) { 
+        // scrollIntoView 方法使該元素滾動到視窗內部
+        // behavior: 'smooth' 使滾動效果平滑過渡，而不是瞬間跳轉
+        element.scrollIntoView({ behavior: 'smooth' });
+        nextTick(() => { // 滾動後再執行
+            textarea.value.focus();
+        });
     }
+}
 </script>
 
 

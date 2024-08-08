@@ -80,7 +80,7 @@
         @click="handleItemClick(item)"
         >{{ item.text }}</v-btn>
       </template>
-      <v-btn class="mx-1" prepend-icon="mdi-account-arrow-right" v-if="user.isLogin" @click="logout">登出</v-btn>
+      <v-btn class="ms-8 bg-accent b-1" elevation="2" prepend-icon="mdi-account-arrow-right" v-if="user.isLogin" @click="logout">登出</v-btn>
       </template>
     </v-container>
   </v-app-bar>

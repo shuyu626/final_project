@@ -1,13 +1,13 @@
 import { Schema, ObjectId, model } from 'mongoose'
 
 const schema = new Schema({
+  image: {
+    type: String,
+    required: [true, '物品圖片必填']
+  },
   name: {
     type: String,
     required: [true, '物品名稱必填']
-  },
-  img: {
-    type: String,
-    required: [true, '物品圖片必填']
   },
   quantity: {
     type: Number,
@@ -18,18 +18,21 @@ const schema = new Schema({
     type: String,
     required: [true, '物品分類必填'],
     enum: {
-      values: ['食品', '服飾配件', '日用品', '家具', '輔具', '教育用品', '嬰幼兒用品', '休閒用品'],
+      values: ['食品', '服飾配件', '日用品', '家具', '輔具', '教育用品', '嬰幼兒用品', '電器', '休閒用品', '其他'],
       message: '物品分類錯誤'
     }
   },
   description: {
     type: String,
-    required: [true, '活動介紹必填']
+    required: [true, '物資介紹必填']
+  },
+  organizer: {
+    type: String,
+    required: [true, '主辦單位必填']
   },
   user: { // 發布物資貼文的用戶
     type: ObjectId,
-    ref: 'users',
-    required: true
+    ref: 'users'
   }
 })
 
