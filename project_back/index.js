@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 import cors from 'cors'
 import { StatusCodes } from 'http-status-codes'
 import mongoSanitize from 'express-mongo-sanitize' // 防止 MongoDB 資料注入的中間件
-import rateLimit from 'express-rate-limit' // 限制請求速率的中間件
+// import rateLimit from 'express-rate-limit' // 限制請求速率的中間件
 import routeUser from './routes/user.js'
 import routeEvent from './routes/event.js'
 import routeMaterial from './routes/material.js'
@@ -12,21 +12,21 @@ import './passport/passport.js'
 const app = express() // 建立網頁伺服器
 
 // 限制請求頻率，設定15分鐘內最多 100 個請求
-app.use(rateLimit({
-  windowMs: 1000 * 60 * 15,
-  max: 100,
-  standardHeaders: 'draft-7',
-  legacyHeaders: false,
-  statusCode: StatusCodes.TOO_MANY_REQUESTS,
-  message: '太多請求',
-  //   超出流量時的回應
-  handler (req, res, next, options) { // options得到上面的設定值
-    res.status(options.statusCode).json({
-      success: false,
-      message: options.message
-    })
-  }
-}))
+// app.use(rateLimit({
+//   windowMs: 1000 * 60 * 15,
+//   max: 100,
+//   standardHeaders: 'draft-7',
+//   legacyHeaders: false,
+//   statusCode: StatusCodes.TOO_MANY_REQUESTS,
+//   message: '太多請求',
+//   //   超出流量時的回應
+//   handler (req, res, next, options) { // options得到上面的設定值
+//     res.status(options.statusCode).json({
+//       success: false,
+//       message: options.message
+//     })
+//   }
+// }))
 
 // 設置 CORS 策略，檢查來源來限制誰可以發請求
 app.use(cors({ // 套用到每個路由

@@ -17,9 +17,8 @@
   <v-card>
     <div class="d-flex flex-row" >
       <v-container>
-
-
         <v-tabs-window v-model="tab" class="my-10">
+<!-- 01 基本資料管理 -->
           <v-tabs-window-item value="option-1">
           <!-- 麵包屑 - 顯示目前頁面位置 -->
            <breadcrumbs :title="profile"></breadcrumbs>
@@ -38,26 +37,59 @@
                     :error-text="{ type: '檔案格式不支援', size: '檔案大小不能超過 1MB' }"
                 ></vue-file-agent>
                   <v-container>
-                    <v-row class="mb-5 px-15  text-left">
-                       <template v-for="(item,index) in members" :key="index" >
+                    <v-row class="mb-5 px-15 text-left">
+                      <template v-for="(item, index) in members" :key="index">
                         <v-col md="2"></v-col>
                         <v-col cols="12" md="3" class="my-auto">
-                          <label class="form-label" style="font-size:18px;">{{item.name}}</label>
+                          <!-- 新增：切換顯示 label 或 text-field 根據 isEditing 屬性 -->
+                          <label  class="form-label" style="font-size:18px;">
+                            {{ item.name }}
+                          </label>
                         </v-col>
                         <v-col cols="12" md="4" class="my-auto">
-                            <p style="font-size:18px;">{{item.member}}</p>
+                          <!-- 新增：切換顯示 p 或 text-field 根據 isEditing 屬性 -->
+                          <p v-if="!item.isEditing" style="font-size:18px;">
+                            {{ item.member }}
+                          </p>
+                          <v-text-field
+                            v-else="item.isEditing"
+                            v-model="item.member"
+                            class="form-label"
+                            style="font-size:18px;"
+                            variant="outlined"
+                            hide-details
+                            single-line
+                            density="comfortable"
+                            clearable
+                            dense
+                          ></v-text-field>
                         </v-col>
                         <v-col md="3" class="ps-10">
-                          <v-btn icon="mdi-pencil" variant="flat"></v-btn>
+                          <!-- 修改：在編輯狀態下顯示確認按鈕 -->
+                          <v-btn
+                            @click="toggleEdit(item)"
+                            icon="mdi-pencil"
+                            variant="flat"
+                          ></v-btn>
+                          <v-btn
+                            v-if="item.isEditing"
+                            @click="saveChanges(item)"
+                            icon="mdi-check"
+                            variant="flat"
+                          ></v-btn>
                         </v-col>
                       </template>
-                  </v-row>
+                    </v-row>
                   </v-container>
                </div>
               </v-card-text>
             </v-card>
           </v-tabs-window-item>
 
+
+
+
+<!-- 02 地標管理 -->
           <v-tabs-window-item value="option-2" >
             <!-- 麵包屑 - 顯示目前頁面位置 -->
            <breadcrumbs :title="mark"></breadcrumbs>
@@ -76,6 +108,9 @@
             </v-data-table-server>
           </v-tabs-window-item>
 
+
+
+<!-- 03 貼文管理 -->
           <v-tabs-window-item value="option-3">
           <!-- 麵包屑 - 顯示目前頁面位置 -->
            <breadcrumbs :title="post"></breadcrumbs>
@@ -120,11 +155,10 @@
                   @click-append="ShareTableLoadItems(true)"
                   @keydown.enter="ShareTableLoadItems(true)"
                   max-width="1200px"
-                  ></search>
-                  
+                ></search>
               </template>
               <template #[`item.image`]="{ value }">
-                <v-img :src="value" width="100px"></v-img>
+                <v-img :src="value" max-width="100px" max-height="100px" ></v-img>
               </template>
               <template #[`item.description`]="{ item }">
                 <td style="width: 250px;" class="py-2">{{ item.description }}</td>
@@ -145,7 +179,7 @@
 
 
 
-            <!-- 活動貼文管理 -->
+<!-- 04 活動收藏管理 -->
             <h4 style="margin-left: 200px;" class="my-5">活動管理</h4>
             <v-data-table-server
                 v-model:items-per-page="event_tableItemsPerPage"
@@ -223,7 +257,7 @@
 import { definePage } from 'vue-router/auto'
 import { useSnackbar } from 'vuetify-use-dialog'
 import { useApi } from '@/composables/axios'
-const { apiAuth } = useApi()
+const { api,apiAuth } = useApi()
 const createSnackbar = useSnackbar()
 definePage({
   meta: {
@@ -242,12 +276,42 @@ const members=ref([
   {name:'密碼',member:'a123456789'}
 ])
 
-
 const eventmark = ([
   {img:'	https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfN0-csYdLsLYB82izZ75htQ_3XlrwQwgW7Q&s', name:'生活好便利~手機APP使用實務講座',organitation:'新北市樂智身心障礙者服務中心',number:''},
   {img:'	https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5jYNdL7EfoBGgHMaYkwvlXLCCyHJ26Wf8Zw&s', name:'溝通與應對技巧暨失智友善天使',organitation:'新北市家庭照顧者支持服務據點',number:''},
   {img:'	https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTt8pdrxch_n_mzicIbK-Wrtpin4V23Dd-Wkw&s', name:'遺物整理與悲傷輔導',organitation:'台北市攸惜關懷協會',number:''},
 ])
+
+
+
+
+// 01 基本資料管理
+const toggleEdit = (item) => {
+      item.isEditing = !item.isEditing;
+    };
+
+    // 新增：保存編輯內容的函數
+    const saveChanges = (item) => {
+      item.isEditing = false;
+    };
+
+//     const loadMaterials = async () => {
+//   try {
+//     const { data } = await api.get('/user')
+//     provides.value.splice(0, provides.value.length, ...data.result.data) // 更新前端的商品列表
+//   } catch (error) {
+//     console.log(error)
+//     createSnackbar({
+//       text: error?.response?.data?.message || '發生錯誤',
+//       snackbarProps: {
+//         color: 'red'
+//       }
+//     })
+//   }
+// }
+
+
+
 
 
 

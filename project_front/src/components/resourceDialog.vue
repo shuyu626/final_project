@@ -131,9 +131,13 @@ const props = defineProps({
     descriptionTitle:{
         type:String,
         default:'需求介紹'
-    }
+    },
+    type: { // **新增 type prop**
+    type: String,
+    default: 'share'
+  }
 });
-const categories = ['食品', '服飾配件', '日用品', '家具', '輔具', '教育用品', '嬰幼兒用品', '電器','休閒用品', '其他']
+const categories = ['食品', '服飾配件', '日用品', '家具', '輔具', '教育用品', '嬰幼兒用品', '電器', '休閒用品', '其他']
 
 
 
@@ -159,7 +163,7 @@ const schema = yup.object({
     .string()
     .required('物品名稱必填'),
   quantity: yup
-    .string()
+    .number()
     .min(1, '物品數量不符')
     .required('物品數量必填'),
   category: yup
@@ -214,6 +218,7 @@ const submit = handleSubmit(async (values) => {
     fd.append('category', values.category)
     fd.append('description', values.description)
     fd.append('organizer', values.organizer)
+    fd.append('type',  props.type)
     if (fileRecords.value.length > 0) {
       fd.append('image', fileRecords.value[0].file)
     }

@@ -30,6 +30,11 @@ const schema = new Schema({
     type: String,
     required: [true, '主辦單位必填']
   },
+  // 分享、募集物資頁面
+  type: {
+    type: String,
+    enum: ['share', 'find']
+  },
   user: { // 發布物資貼文的用戶
     type: ObjectId,
     ref: 'users'

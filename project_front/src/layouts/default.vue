@@ -117,8 +117,8 @@ const menus = computed(() => {
     {
       title: "物資分享", icon: 'mdi-package-variant' , show: user.isLogin,
       items: [
-        { to: "/material/findMaterial", text: "我要募資" , show:user.isLogin},
-        { to: "/material/shareMaterial", text: "我要分享" , show:user.isLogin},
+        { to: "/material/find/findMaterial", text: "我要募資" , show:user.isLogin},
+        { to: "/material/share/shareMaterial", text: "我要分享" , show:user.isLogin},
       ],
     },
   ];
